@@ -1,5 +1,5 @@
 {
-    "name": "shoaibali/saml-sp",
+    "name": "shoaibali/silverstripe-saml-sp",
     "description": "Adds a service provider component to SilverStripe",
     "type": "silverstripe-module",
     "keywords": ["silverstripe", "sso", "saml", "identity", "singlesignon"],
