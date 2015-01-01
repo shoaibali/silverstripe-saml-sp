@@ -13,6 +13,19 @@
         "silverstripe/framework": "~3.1",
         "silverstripe/cms": ">=3.1.0",
         "onelogin/php-saml": "master-dev"
-    }
+    },    
+
+    "config": {
+        "process-timeout": 900
+    },
+
+    "repositories": [
     
+    {
+      "type": "vcs",
+      "url": "https://github.com/onelogin/php-saml"
+    }
+  ],
+  "minimum-stability": "dev"
+
 }
