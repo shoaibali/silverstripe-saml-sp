@@ -14,7 +14,7 @@ class SAMLSecurityAdmin extends LeftAndMain implements PermissionProvider {
 	
 	private static $menu_title = 'SAML';
 
-	private static $menu_icon = '/saml-sp/images/key.png'; 
+	private static $menu_icon = '/silverstripe-saml-sp/images/key.png'; 
 		
 	private static $subitem_class = 'Saml';
 
