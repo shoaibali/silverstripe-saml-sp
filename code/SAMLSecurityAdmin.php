@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Security section of the CMS
  *
@@ -56,9 +55,6 @@ class SAMLSecurityAdmin extends LeftAndMain implements PermissionProvider {
 		if(Permission::check('ADMIN')) {
 
 
-		//$fields = new FieldList('Root');
-
-
 		$samlField = GridField::create('SAML',
 			false,
 			IdentityProvider::get(),
@@ -92,10 +88,6 @@ class SAMLSecurityAdmin extends LeftAndMain implements PermissionProvider {
 			new HiddenField('ID', false, 0)
 		);
 
-
-
-			// $samlTab = $fields->findOrMakeTab('Root.SAML', _t('SecurityAdmin.SAML', 'SAML'));
-			// $samlTab->push($samlField);
 		}
 
 		// Tab nav in CMS is rendered through separate template		

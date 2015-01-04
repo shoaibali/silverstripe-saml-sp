@@ -22,17 +22,14 @@ class IdentityProvider extends DataObject {
 		"entityid" => "Varchar(512)",
 		"singleSignOnServiceUrl" => "Varchar(512)",
 		"singleSignOnServiceBinding" => "Varchar(512)",
+		"singleLogoutServiceUrl" => "Varchar(512)",
+		"singleLogoutServiceBinding" => "Varchar(512)",
 		"NameIDFormat" => "Varchar(512)",
 		"x509cert" => "Text",
-		"privateKey" => "Text",
+		"certFingerprint" => "Text",
 
 	);
-	
-	private static $has_many = array(
-	);
-	
-	private static $belongs_many_many = array(		
-	);
+
 	
 	private static $default_sort = '"Title"';
 	
@@ -42,27 +39,13 @@ class IdentityProvider extends DataObject {
 	
 	public function getCMSFields() {
 		$fields = parent::getCMSFields();
-		
-		// $fields->addFieldToTab(
-		// 	'Root.Main', 
-		// 	$permissionField = new PermissionCheckboxSetField(
-		// 		'Codes',
-		// 		singleton('Permission')->i18n_plural_name(),
-		// 		'PermissionRoleCode',
-		// 		'RoleID'
-		// 	)
-		// );
-		// $permissionField->setHiddenPermissions(
-		// 	Config::inst()->get('Permission', 'hidden_permissions')
-		// );
-		
 		return $fields;
 	}
 	
 	public function onAfterDelete() {
 		parent::onAfterDelete();
-
 		// TODO if there are any other Identity Providers make the first one active
+		// So that user does not get locked out with all IdP's inactive
 		
 	}
 

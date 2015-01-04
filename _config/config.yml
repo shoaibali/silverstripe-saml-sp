@@ -1,0 +1,8 @@
+---
+Name: singlesignonconfig
+---
+SiteConfig:
+  extensions:
+    - SingleSignOnConfig
+SingleSignOnConfig:
+    EnableSingleSignOn: true
