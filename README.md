@@ -19,9 +19,20 @@ Configuration
 -------------
 
 You can install it using composer or just download it and extract it in to a folder called silverstripe-saml-sp.
+Run composer install. This will get all dependencies such as php-saml toolkit etc.
 Run dev/build?flush=all as usual. 
 You should now see two settings, one is visible on left hand side tab called SAML. This is where you will need to add an Identity Provider.
 The other setting is under Settings tab of SilverStripe and then under Single Sign On. This is where you will need to provide all Service provder settings.
 
 The module is disabled by default in order to avoid lock-outs. You can enable it by opening up config.yml and setting     EnableSingleSignOn: true
 Please make sure you run dev/build after changing the setting. 
+
+
+Screenshots
+-----------
+
+![Adding Identity Provider](https://raw.githubusercontent.com/shoaibali/silverstripe-saml-sp/master/images/screenshots/add-identity-provider.png)
+
+![Editing Identity Provider](https://raw.githubusercontent.com/shoaibali/silverstripe-saml-sp/master/images/screenshots/edit-identity-provider.png)
+
+![SAML Service Provider Configuration](https://raw.githubusercontent.com/shoaibali/silverstripe-saml-sp/master/images/screenshots/service-provider-settings.png)
