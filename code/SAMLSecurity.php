@@ -45,7 +45,13 @@ class SAMLSecurity extends Controller {
 		// When configured correctly this should never be the case. Just for security.
 		if(empty($IdPsettings)) {
 			// @TODO move to translation file.
-			user_error("No IdP Available or Active, Please go to CMS/SAML tab and define an Identity Provder", E_USER_ERROR);
+			user_error(
+				_t(
+					'NO_IDP_ACTIVE',
+					'No IdP Available or Active. Please define and activate an Identity Provder.'
+				),
+				E_USER_ERROR
+			);
 		}
 
 		$SPsettings = SiteConfig::current_site_config();
@@ -119,7 +125,7 @@ class SAMLSecurity extends Controller {
 				);
 			}
 		} catch (Exception $e) {
-			user_error("SLS Error" . $e->getMessage(), E_USER_ERROR);
+			user_error(_t('SLS_ERROR', "SLS Error") . $e->getMessage(), E_USER_ERROR);
 		}
 	}
 
@@ -171,7 +177,7 @@ class SAMLSecurity extends Controller {
 		$errors = self::$authenticator->getErrors();
 
 		if (!empty($errors)) {
-			user_error("SLS Error " . implode(', ', $errors), E_USER_ERROR);
+			user_error(_t('SLS_ERROR', "SLS Error") . implode(', ', $errors), E_USER_ERROR);
 		}
 
 		// if the user isn't logged in send him back to the IdP
@@ -182,15 +188,18 @@ class SAMLSecurity extends Controller {
 		$member = $this->authenticate();
 
 		if(!$member instanceof Member) {
-			user_error(get_class($auth) . ' does not return a valid Member');
+			user_error(_t(
+				'NOT_A_VALID_MEMBER',
+				'{class} does not return a valid Member',
+				array('class' => get_class($auth))
+			));
 		}
 
 		$member->login();
 
 		// Use the BackURL for redirection if avaiable, or fall back on RelayState
-		$dest = !empty(Session::get('BackURL')) ?
-			Session::get('BackURL') : $this->request->postVar('RelayState');
-
+		$dest = Session::get('BackURL');
+		if (!empty($backURL)) $dest = $this->request->postVar('RelayState');
 		Session::clear('BackURL');
 
 		return $this->redirect($dest);
@@ -208,7 +217,7 @@ class SAMLSecurity extends Controller {
 		if (empty($errors)) {
 			return $this->redirect('/Security/loggedout');
 		} else {
-			user_error("SLS Error " . implode(', ', $errors), E_USER_ERROR);
+			user_error(_t('SLS_ERROR', "SLS Error") . implode(', ', $errors), E_USER_ERROR);
 		}
 	}
 
@@ -260,7 +269,13 @@ class SAMLSecurity extends Controller {
 		$mode = $this->config()->force_ssl;
 
 		if (!is_bool($mode)) {
-			user_error("Expected boolean in SAMLSecurity::force_ssl", E_USER_ERROR);
+			user_error(
+				_t(
+					'ERROR_NOT_A_BOOLEAN',
+					'Expected boolean in SAMLSecurity::force_ssl'
+				),
+				E_USER_ERROR
+			);
 		}
 
 		if ($mode) {
