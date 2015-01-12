@@ -38,14 +38,14 @@ class SingleSignOnConfig extends DataExtension {
 	public function requireDefaultRecords() {
 		// assemble the default values
 		$defaults = array(
-			'SPEntityID' => Director::absoluteBaseURL();
-			'ACSurl' => Director::absoluteBaseURL() . 'Security/acs';
-			'ACSbinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST';
-			'SLSurl' => Director::absoluteBaseURL() . 'Security/sls';
-			'SLSbinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect';
-			'NameIDFormat' => 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress';
-			'FederationUID' => 'Email';
-			'AttributeMapID' => 'mail';
+			'SPEntityID' => Director::absoluteBaseURL(),
+			'ACSurl' => Director::absoluteBaseURL() . 'Security/acs',
+			'ACSbinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST',
+			'SLSurl' => Director::absoluteBaseURL() . 'Security/sls',
+			'SLSbinding' => 'urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect',
+			'NameIDFormat' => 'urn:oasis:names:tc:SAML:1.1:nameid-format:emailAddress',
+			'FederationUID' => 'Email',
+			'AttributeMapID' => 'mail',
 		);
 
 		$config = SiteConfig::current_site_config();
