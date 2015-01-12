@@ -10,7 +10,7 @@ class SAMLSecurity extends Controller {
 	 * This holds the OneLogin_Saml2_Auth object with the config
 	 * from the Identity Provider data object
 	 *
-	 * @var mixed
+	 * @var OneLogin_Saml2_Auth
 	 */
 	private static $authenticator;
 
@@ -38,55 +38,55 @@ class SAMLSecurity extends Controller {
 	public function init() {
 		parent::init();
 
-		// I am not sure if this is a good idea but it will always take the first
-		// active Identity Provider.
 		// More identity providers can be added in future for oAuth (Facebook, Twitter etc).
+		// Here we use the first active by default as there shouldn't be more than one active.
+		$IdPsettings = IdentityProvider::get()->filter('Active', '1')->First();
 
-		$IdPsettingsInfo = IdentityProvider::get()->filter('Active', '1')->First();
-
-		if(!empty($settingsInfo)) {
+		// When configured correctly this should never be the case. Just for security.
+		if(empty($IdPsettings)) {
+			// @TODO move to translation file.
 			user_error("No IdP Available or Active, Please go to CMS/SAML tab and define an Identity Provder", E_USER_ERROR);
 		}
 
-		$SPsettingsInfo = SiteConfig::current_site_config();
+		$SPsettings = SiteConfig::current_site_config();
 
 		// assemble the settings
-		$settingsInfo = array(
-			'strict' => $SPsettingsInfo->StrictMode,
-			'debug' => $SPsettingsInfo->Debug,
+		$settings = array(
+			'strict' => $SPsettings->StrictMode,
+			'debug' => $SPsettings->Debug,
 			'sp' => array(
-				'entityId' => $SPsettingsInfo->SPEntityID,
+				'entityId' => $SPsettings->SPEntityID,
 				'assertionConsumerService' => array(
-					'url' => $SPsettingsInfo->ACSurl,
-					'binding' => $SPsettingsInfo->ACSbinding,
+					'url' => $SPsettings->ACSurl,
+					'binding' => $SPsettings->ACSbinding,
 				),
 				'singleLogoutService' => array(
-					'url' => $SPsettingsInfo->SLSurl,
-					'binding' => $SPsettingsInfo->SLSbinding,
+					'url' => $SPsettings->SLSurl,
+					'binding' => $SPsettings->SLSbinding,
 				),
-				'NameIDFormat' => $SPsettingsInfo->NameIDFormat,
-				'x509cert' => $SPsettingsInfo->x509cert,
-				'privateKey' > $SPsettingsInfo->privateKey,
+				'NameIDFormat' => $SPsettings->NameIDFormat,
+				'x509cert' => $SPsettings->x509cert,
+				'privateKey' > $SPsettings->privateKey,
 			),
 
 			// Identity Provider Data that we want connect with our SP
 			'idp' => array(
-				'entityId' => $IdPsettingsInfo->entityid,
+				'entityId' => $IdPsettings->entityid,
 				'singleSignOnService' => array(
-					'url' => $IdPsettingsInfo->singleSignOnServiceUrl,
-					'binding' => $IdPsettingsInfo->singleSignOnServiceBinding,
+					'url' => $IdPsettings->singleSignOnServiceUrl,
+					'binding' => $IdPsettings->singleSignOnServiceBinding,
 				),
 				'singleLogoutService' => array(
-					'url' => $IdPsettingsInfo->singleLogoutServiceUrl,
-					'binding' => $IdPsettingsInfo->singleLogoutServiceBinding,
+					'url' => $IdPsettings->singleLogoutServiceUrl,
+					'binding' => $IdPsettings->singleLogoutServiceBinding,
 				),
-				'x509cert' => $IdPsettingsInfo->x509cert,
-				'certFingerprint' => $IdPsettingsInfo->certFingerprint,
+				'x509cert' => $IdPsettings->x509cert,
+				'certFingerprint' => $IdPsettings->certFingerprint,
 			),
 		);
 
 		// initialize the SAML authenticator
-		self::$authenticator = new OneLogin_Saml2_Auth($settingsInfo);
+		self::$authenticator = new OneLogin_Saml2_Auth($settings);
 
 		// Prevent clickjacking, see https://developer.mozilla.org/en-US/docs/HTTP/X-Frame-Options
 		$this->response->addHeader('X-Frame-Options', 'SAMEORIGIN');
@@ -97,17 +97,24 @@ class SAMLSecurity extends Controller {
 		return $this->redirect(BASE_URL . 'Security/login');
 	}
 
+	/**
+	 * gets the metadata and returns them as a xml
+	 *
+	 * @return SS_HTTPResponse
+	 */
 	public function metadata() {
 		try {
 			$settings = self::$authenticator->getSettings();
 			$metadata = $settings->getSPMetadata();
 			$errors = $settings->validateMetadata($metadata);
+
 			if (empty($errors)) {
-				header('Content-Type: text/xml');
-				echo $metadata;
+				$response = new SS_HTTPResponse($metadata);
+				$response->addHeader('Content-Type', 'text/xml');
+				return $response;
 			} else {
 				throw new OneLogin_Saml2_Error(
-					'Invalid SP metadata: '.implode(', ', $errors),
+					'Invalid SP metadata: ' . implode(', ', $errors),
 					OneLogin_Saml2_Error::METADATA_SP_INVALID
 				);
 			}
@@ -133,48 +140,43 @@ class SAMLSecurity extends Controller {
 	 * @todo Handle user provisioning
 	 */
 	private function authenticate() {
-		$attributes = self::$authenticator->getAttributes();
-
-		// @TODO Maybe look at storing this in class variable because it will be used
-		// again and again for future enhancements. Currently being called again in init()
+		// load the config to get the mapping of the keys provided by the IdP into
+		//  SilverStripe member-class fields
 		$spConfig = SiteConfig::current_site_config();
-
 		$AttributeMapID = $spConfig->AttributeMapID;
 		$FederationUID = $spConfig->FederationUID;
 
-
+		// Extract the UID out of the response
+		$attributes = self::$authenticator->getAttributes();
 		$uid = $attributes[$AttributeMapID][0];
+
+		// load the member based on the provided UID (usually the mail address)
 		$member = Member::get()->filter($FederationUID, $uid)->first();
 
-		// @TODO Mapping of extra attributes sent by IdP in to SilverStripe
-		// @TODO Handle account provisioning
-		// If the member does not exist in Silverstripe, create them
-		// if (!$member) {
-		//     $member = new Member();
-		//     $member->Username = $attributes['sAMAccountName'][0];
-		//     $member->FirstName =  $attributes['givenName'][0];
-		//     $member->Surname =  $attributes['sn'][0];
-		//     $member->Email =  $attributes['mail'][0];
-
-		//     $member->write();
-		// }
+		/*
+		 * @Note: Currently a existing account within SilverStripe is required.
+		 * If you want to create members on the fly you can do this here.
+		 */
 
 		return $member;
 	}
 
-	/* Assertion Consumer Service */
+	/**
+	 * Assertion Consumer Service
+	 *
+	 * @return SS_HTTPResponse
+	 */
 	public function acs() {
 		self::$authenticator->processResponse();
 		$errors = self::$authenticator->getErrors();
 
 		if (!empty($errors)) {
-			user_error("SLS Error" . implode(', ', $errors), E_USER_ERROR);
+			user_error("SLS Error " . implode(', ', $errors), E_USER_ERROR);
 		}
 
+		// if the user isn't logged in send him back to the IdP
 		if (!self::$authenticator->isAuthenticated()) {
-			// @TODO redirect back to login? or a page saying they need to initiate login again
-			echo "<p>Not authenticated</p>";
-			exit();
+			return $this->redirect('/security/login');
 		}
 
 		$member = $this->authenticate();
@@ -186,22 +188,27 @@ class SAMLSecurity extends Controller {
 		$member->login();
 
 		// Use the BackURL for redirection if avaiable, or fall back on RelayState
-		$dest = !empty(Session::get('BackURL')) ? Session::get('BackURL') : $this->request->postVar('RelayState');
+		$dest = !empty(Session::get('BackURL')) ?
+			Session::get('BackURL') : $this->request->postVar('RelayState');
 
 		Session::clear('BackURL');
 
 		return $this->redirect($dest);
-
 	}
 
-	/* Process the SAML Logout Response / Logout Request sent by the IdP. */
+	/**
+	 * Process the SAML Logout Response / Logout Request sent by the IdP.
+	 *
+	 * @return SS_HTTPResponse
+	 */
 	public function sls() {
 		self::$authenticator->processSLO();
 		$errors = self::$authenticator->getErrors();
+
 		if (empty($errors)) {
-			$this->redirect('/Security/loggedout');
+			return $this->redirect('/Security/loggedout');
 		} else {
-			user_error("SLS Error" . implode(', ', $errors), E_USER_ERROR);
+			user_error("SLS Error " . implode(', ', $errors), E_USER_ERROR);
 		}
 	}
 
@@ -211,7 +218,7 @@ class SAMLSecurity extends Controller {
 	 * @see logout()
 	 */
 	public function slo() {
-		$this->logout();
+		return $this->logout();
 	}
 
 
@@ -242,8 +249,8 @@ class SAMLSecurity extends Controller {
 			$member->logout();
 		}
 
-		//$this->sls();
-		return $this->redirect(str_replace('https', 'http', Director::absoluteBaseURL()));
+		// @TODO where to end up really?
+		return $this->redirect(Director::absoluteBaseURL());
 	}
 
 	/**
@@ -252,11 +259,11 @@ class SAMLSecurity extends Controller {
 	private function forceSSL() {
 		$mode = $this->config()->force_ssl;
 
-		if(!is_bool($mode)) {
+		if (!is_bool($mode)) {
 			user_error("Expected boolean in SAMLSecurity::force_ssl", E_USER_ERROR);
 		}
 
-		if($mode) {
+		if ($mode) {
 			Director::forceSSL();
 		}
 	}

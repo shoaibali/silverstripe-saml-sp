@@ -31,37 +31,22 @@ class IdentityProvider extends DataObject {
 		"certFingerprint" => "Text",
 	);
 
-
 	private static $default_sort = '"Title"';
 
 	private static $singular_name = 'Identity Provder';
 
 	private static $plural_name = 'Identity Providers';
 
-	public function getCMSFields() {
-		$fields = parent::getCMSFields();
-		return $fields;
-	}
+	/**
+	 * Avoid deleting of active IdPs while Single Sign On is active.
+	 *
+	 * @TODO refactor once enable is a database flag.
+	 */
+	public function onBeforeDelete() {
+		parent::onBeforeDelete();
 
-	public function onAfterDelete() {
-		parent::onAfterDelete();
-		// @TODO if there are any other Identity Providers make the first one active
-		// So that user does not get locked out with all IdP's inactive
-	}
-
-	public function canView($member = null) {
-		return Permission::check('ADMIN');
-	}
-
-	public function canCreate($member = null) {
-		return Permission::check('ADMIN');
-	}
-
-	public function canEdit($member = null) {
-		return Permission::check('ADMIN');
-	}
-
-	public function canDelete($member = null) {
-		return Permission::check('ADMIN');
+		if ($this->Active && Config::inst()->get('SingleSignOnConfig', 'EnableSingleSignOn')) {
+			user_error('You cant delete the only active IdP while using Single Sign On.');
+		}
 	}
 }

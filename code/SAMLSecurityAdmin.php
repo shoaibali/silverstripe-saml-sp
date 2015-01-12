@@ -49,7 +49,7 @@ class SAMLSecurityAdmin extends LeftAndMain implements PermissionProvider {
 		}
 
 		// Add import capabilities. Limit to admin since the import logic can affect assigned permissions
-		if(Permission::check('ADMIN')) {
+		if (Permission::check('ADMIN')) {
 			$samlField = GridField::create('SAML',
 				false,
 				IdentityProvider::get(),
@@ -78,6 +78,7 @@ class SAMLSecurityAdmin extends LeftAndMain implements PermissionProvider {
 						)
 					)
 				),
+
 				// necessary for tree node selection in LeftAndMain.EditForm.js
 				new HiddenField('ID', false, 0)
 			);
