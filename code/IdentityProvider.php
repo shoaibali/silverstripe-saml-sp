@@ -45,8 +45,12 @@ class IdentityProvider extends DataObject {
 	public function onBeforeDelete() {
 		parent::onBeforeDelete();
 
+		// Dont allow to delete an active IdP while the module is enabled.
 		if ($this->Active && Config::inst()->get('SingleSignOnConfig', 'EnableSingleSignOn')) {
-			user_error('You cant delete the only active IdP while using Single Sign On.');
+			user_error(_t(
+				'ERROR_UNABLE_TO_DELETE_WHILE_ACTIVE',
+				'You cant delete the only active IdP while using Single Sign On.'
+			));
 		}
 	}
 }
