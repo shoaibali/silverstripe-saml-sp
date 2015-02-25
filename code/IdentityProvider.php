@@ -37,6 +37,7 @@ class IdentityProvider extends DataObject {
 
 	private static $plural_name = 'Identity Providers';
 
+
 	/**
 	 * Avoid deleting of active IdPs while Single Sign On is active.
 	 *

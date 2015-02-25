@@ -14,6 +14,7 @@ class SAMLSecurity extends Controller {
 	 */
 	private static $authenticator;
 
+
 	/**
 	 * Force HTTPS mode when executing authentication functions
 	 *
@@ -166,6 +167,7 @@ class SAMLSecurity extends Controller {
 
 		return $member;
 	}
+
 
 	/**
 	 * Assertion Consumer Service

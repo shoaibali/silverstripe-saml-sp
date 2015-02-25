@@ -129,7 +129,7 @@ class SingleSignOnConfig extends DataExtension {
 					_t(
 						'METADATAURL_MSG',
 						'<a href="{url}" target="_blank">{url}</a>',
-						array('URL' => Director::absoluteBaseURL() . 'Security/metadata')
+						array('url' => Director::absoluteBaseURL() . 'Security/metadata')
 					)
 				)
 			));
@@ -156,7 +156,7 @@ class SingleSignOnConfig extends DataExtension {
 					'IdPnameIdEncrypted',
 					_t(
 						'IdPnameIdEncrypted',
-						'Indicates that the nameID of the <samlp:logoutRequest> sent by this SP ' .
+						'Indicates that the nameID of the '.Convert::raw2xml("<samlp:logoutRequest>").' sent by this SP ' .
 						'will be encrypted.'
 					)
 				)
@@ -168,7 +168,7 @@ class SingleSignOnConfig extends DataExtension {
 					'authnRequestsSigned',
 					_t(
 						'authnRequestsSigned',
-						'Indicates whether the <samlp:AuthnRequest> messages sent by this SP ' .
+						'Indicates whether the '.Convert::raw2xml("<samlp:AuthnRequest>").' messages sent by this SP ' .
 						'will be signed.'
 					)
 				)
@@ -180,7 +180,7 @@ class SingleSignOnConfig extends DataExtension {
 					'logoutRequestSigned',
 					_t(
 						'logoutRequestSigned',
-						'Indicates whether the <samlp:logoutRequest> messages sent by this SP ' .
+						'Indicates whether the '.Convert::raw2xml("<samlp:logoutRequest>").' messages sent by this SP ' .
 						'will be signed.'
 					)
 				)
@@ -192,7 +192,7 @@ class SingleSignOnConfig extends DataExtension {
 					'logoutResponseSigned',
 					_t(
 						'logoutResponseSigned',
-						'Indicates whether the <samlp:logoutResponse> messages sent by this SP ' .
+						'Indicates whether the '.Convert::raw2xml("<samlp:logoutResponse>").' messages sent by this SP ' .
 						'will be signed.'
 					)
 				)
@@ -216,8 +216,8 @@ class SingleSignOnConfig extends DataExtension {
 					'wantMessagesSigned',
 					_t(
 						'wantMessagesSigned',
-						'Indicates a requirement for the <samlp:Response>, <samlp:LogoutRequest> ' .
-						'and <samlp:LogoutResponse> elements received by this SP to be signed.'
+						'Indicates a requirement for the '.Convert::raw2xml("<samlp:Response>, <samlp:LogoutRequest>").
+						'and '.Convert::raw2xml("<samlp:LogoutResponse>").' elements received by this SP to be signed.'
 					)
 				)
 			));
@@ -228,7 +228,7 @@ class SingleSignOnConfig extends DataExtension {
 					'wantAssertionsSigned',
 					_t(
 						'wantAssertionsSigned',
-						'Indicates a requirement for the <saml:Assertion> elements received by ' .
+						'Indicates a requirement for the '.Convert::raw2xml("<saml:Assertion>").' elements received by ' .
 						'this SP to be signed.'
 					)
 				)
