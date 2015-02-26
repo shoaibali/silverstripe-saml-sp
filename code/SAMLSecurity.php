@@ -201,8 +201,7 @@ class SAMLSecurity extends Controller {
 
 		// Use the BackURL for redirection if avaiable, or fall back on RelayState
 		$dest = Session::get('BackURL');
-		if (!empty($backURL)) $dest = $this->request->postVar('RelayState');
-		Session::clear('BackURL');
+		if (empty($dest)) $dest = $this->request->postVar('RelayState');
 
 		return $this->redirect($dest);
 	}
