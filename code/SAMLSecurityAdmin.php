@@ -6,14 +6,29 @@
  * @subpackage admin
  */
 class SAMLSecurityAdmin extends LeftAndMain implements PermissionProvider {
+	/**
+	 * @var string
+	 */
 	private static $url_segment = 'saml-security';
 
+	/**
+	 * @var string
+	 */
 	private static $url_rule = '/$Action/$ID/$OtherID';
 
+	/**
+	 * @var string
+	 */
 	private static $menu_title = 'SAML';
 
+	/**
+	 * @var string
+	 */
 	private static $menu_icon = '/silverstripe-saml-sp/images/key.png';
 
+	/**
+	 * @var string
+	 */
 	private static $subitem_class = 'Saml';
 
 	/**

@@ -31,10 +31,19 @@ class IdentityProvider extends DataObject {
 		"certFingerprint" => "Text",
 	);
 
+	/**
+	 * @var string
+	 */
 	private static $default_sort = '"Title"';
 
+	/**
+	 * @var string
+	 */
 	private static $singular_name = 'Identity Provder';
 
+	/**
+	 * @var string
+	 */
 	private static $plural_name = 'Identity Providers';
 
 
