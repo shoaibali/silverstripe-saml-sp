@@ -8,3 +8,4 @@ if (Config::inst()->get('SingleSignOnConfig', 'EnableSingleSignOn')) {
 		'security//$Action/$ID/$OtherID' => 'SAMLSecurity'
 	));
 }
+
