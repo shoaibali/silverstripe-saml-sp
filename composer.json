@@ -3,36 +3,31 @@
     "description": "Adds a service provider component to SilverStripe",
     "type": "silverstripe-module",
     "keywords": ["silverstripe", "sso", "saml", "identity", "singlesignon"],
-	"license": "GNU GPL",
+    "license": "GNU GPL",
     "authors": [
-    {
-        "name": "Shoaib Ali",
-        "email": "shoaib@catalyst.net.nz"
-    }],
-
-        "support": {
+        {
+            "name": "Shoaib Ali",
+            "email": "shoaib@catalyst.net.nz"
+        }
+    ],
+    "support": {
         "issues": "https://github.com/shoaibali/silverstripe-saml-sp/issues"
     },
-
     "require": {
         "php": ">=5.3",
         "composer/installers": "*",
         "silverstripe/framework": "~3.1",
         "silverstripe/cms": ">=3.1.0",
         "onelogin/php-saml": "master-dev"
-    },    
-
+    },
     "config": {
         "process-timeout": 900
     },
-
     "repositories": [
-    
-    {
-      "type": "vcs",
-      "url": "https://github.com/onelogin/php-saml"
-    }
+        {
+          "type": "vcs",
+          "url": "https://github.com/onelogin/php-saml"
+        }
   ],
   "minimum-stability": "dev"
-
 }
