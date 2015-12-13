@@ -14,53 +14,55 @@
  * @method HasManyList Codes() List of PermissionRoleCode objects
  * @method ManyManyList Groups() List of Group objects
  */
-class IdentityProvider extends DataObject {
-	/**
-	 * @var array
-	 */
-	private static $db = array(
-		"Title" => "Varchar(512)",
-		"Active" => "Boolean",
-		"entityid" => "Varchar(512)",
-		"singleSignOnServiceUrl" => "Varchar(512)",
-		"singleSignOnServiceBinding" => "Varchar(512)",
-		"singleLogoutServiceUrl" => "Varchar(512)",
-		"singleLogoutServiceBinding" => "Varchar(512)",
-		"NameIDFormat" => "Varchar(512)",
-		"x509cert" => "Text",
-		"certFingerprint" => "Text",
-	);
+class IdentityProvider extends DataObject
+{
+    /**
+     * @var array
+     */
+    private static $db = array(
+        "Title" => "Varchar(512)",
+        "Active" => "Boolean",
+        "entityid" => "Varchar(512)",
+        "singleSignOnServiceUrl" => "Varchar(512)",
+        "singleSignOnServiceBinding" => "Varchar(512)",
+        "singleLogoutServiceUrl" => "Varchar(512)",
+        "singleLogoutServiceBinding" => "Varchar(512)",
+        "NameIDFormat" => "Varchar(512)",
+        "x509cert" => "Text",
+        "certFingerprint" => "Text",
+    );
 
-	/**
-	 * @var string
-	 */
-	private static $default_sort = '"Title"';
+    /**
+     * @var string
+     */
+    private static $default_sort = '"Title"';
 
-	/**
-	 * @var string
-	 */
-	private static $singular_name = 'Identity Provder';
+    /**
+     * @var string
+     */
+    private static $singular_name = 'Identity Provder';
 
-	/**
-	 * @var string
-	 */
-	private static $plural_name = 'Identity Providers';
+    /**
+     * @var string
+     */
+    private static $plural_name = 'Identity Providers';
 
 
-	/**
-	 * Avoid deleting of active IdPs while Single Sign On is active.
-	 *
-	 * @TODO refactor once enable is a database flag.
-	 */
-	public function onBeforeDelete() {
-		parent::onBeforeDelete();
+    /**
+     * Avoid deleting of active IdPs while Single Sign On is active.
+     *
+     * @TODO refactor once enable is a database flag.
+     */
+    public function onBeforeDelete()
+    {
+        parent::onBeforeDelete();
 
-		// Dont allow to delete an active IdP while the module is enabled.
-		if ($this->Active && Config::inst()->get('SingleSignOnConfig', 'EnableSingleSignOn')) {
-			user_error(_t(
-				'ERROR_UNABLE_TO_DELETE_WHILE_ACTIVE',
-				'You cant delete the only active IdP while using Single Sign On.'
-			));
-		}
-	}
+        // Dont allow to delete an active IdP while the module is enabled.
+        if ($this->Active && Config::inst()->get('SingleSignOnConfig', 'EnableSingleSignOn')) {
+            user_error(_t(
+                'ERROR_UNABLE_TO_DELETE_WHILE_ACTIVE',
+                'You cant delete the only active IdP while using Single Sign On.'
+            ));
+        }
+    }
 }
